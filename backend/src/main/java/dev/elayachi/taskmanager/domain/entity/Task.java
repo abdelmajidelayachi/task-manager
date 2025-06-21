@@ -26,25 +26,21 @@ import java.util.Objects;
 @Table(name = "tasks")
 public class Task {
 
-  // Getters and Setters
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank(message = "Title is required")
-  @Size(max = 255, message = "Title must not exceed 255 characters")
   @Column(name = "title", nullable = false, length = 255)
   private String title;
 
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
-  @NotNull(message = "Status is required")
   @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false, length = 50)
   private TaskStatus status = TaskStatus.PENDING;
 
-  @NotNull(message = "Priority is required")
   @Enumerated(EnumType.STRING)
   @Column(name = "priority", nullable = false, length = 50)
   private TaskPriority priority = TaskPriority.MEDIUM;
