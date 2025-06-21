@@ -1,0 +1,27 @@
+# name
+spring:
+  application:
+    name: Task Manager
+# database config
+  datasource:
+    url: jdbc:postgresql://localhost:5462/task_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  # JPA config
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create
+    show-sql: on
+  # flyway config
+  flyway:
+    enabled: true
+    baseline-on-migrate: on
+    locations: classpath:db/migration
+# port
+server:
+  port: 8088

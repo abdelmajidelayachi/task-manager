@@ -2,12 +2,13 @@ package dev.elayachi.taskmanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-public class TaskmanagerApplication {
+public class TaskManagerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TaskmanagerApplication.class, args);
+		SpringApplication.run(TaskManagerApplication.class, args);
 	}
 
 }
