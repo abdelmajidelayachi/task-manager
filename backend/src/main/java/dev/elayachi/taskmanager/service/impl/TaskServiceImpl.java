@@ -67,4 +67,14 @@ public class TaskServiceImpl implements TaskService {
       return taskMapper.toResponse(updatedTask);
     }
 
+  @Override
+  public void deleteTask(Long id) {
+    Task task = taskRepository.findById(id)
+      .orElseThrow(() -> new ResourceNotFoundException(
+        String.format("Task not found with id: %s", id)));
+    taskRepository.delete(task);
+  }
+
+
+
 }

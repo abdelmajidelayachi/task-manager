@@ -88,4 +88,14 @@ public class TaskController {
       return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
   }
 
+  /**
+   * delete task by id
+   * @param id task id
+   * @throws ResourceNotFoundException if task is not found
+   */
+  @DeleteMapping("{id}")
+  public void deleteTaskById(@PathVariable("id") Long id) {
+    taskService.deleteTask(id);
+  }
+
 }

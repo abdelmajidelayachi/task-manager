@@ -37,4 +37,10 @@ public interface TaskService {
    * @return TaskResponse
    */
   TaskResponse updateTask(Long id, TaskRequest taskRequest);
+
+  /**
+   * Deletes a task by ID
+   * @param id task identifier
+   */
+  void deleteTask(Long id);
 }
