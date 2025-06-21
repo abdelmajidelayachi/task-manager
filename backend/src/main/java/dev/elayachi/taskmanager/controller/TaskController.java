@@ -76,6 +76,16 @@ public class TaskController {
     return ResponseEntity.ok(taskService.getTaskById(id));
   }
 
-
+  /**
+   * Update an existing task by its id
+   * @param id task
+   * @param taskRequest task update details
+   * @return ResponseEntity containing updated TaskResponse
+   */
+  @PutMapping("/{id}")
+  public ResponseEntity<TaskResponse> updateTaskById(@PathVariable("id") Long id, @Valid @RequestBody TaskRequest taskRequest) {
+      TaskResponse updatedTask = taskService.updateTask(id, taskRequest);
+      return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
+  }
 
 }

@@ -49,5 +49,22 @@ public class TaskServiceImpl implements TaskService {
       }
       throw new ResourceNotFoundException(String.format("No task found by id of [%s]", id));
     }
+    @Override
+    public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
+      // Check if the task exists
+      Task existingTask = taskRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException(
+          String.format("Task not found with id: %s", id)));
+
+      // Update the existing task fields
+      existingTask.setTitle(taskRequest.getTitle());
+      existingTask.setDescription(taskRequest.getDescription());
+      existingTask.setStatus(taskRequest.getStatus());
+      existingTask.setPriority(taskRequest.getPriority());
+
+      // Save the updated task
+      Task updatedTask = taskRepository.save(existingTask);
+      return taskMapper.toResponse(updatedTask);
+    }
 
 }

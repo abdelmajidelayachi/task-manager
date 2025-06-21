@@ -2,7 +2,6 @@ package dev.elayachi.taskmanager.service;
 
 import dev.elayachi.taskmanager.domain.dto.request.TaskRequest;
 import dev.elayachi.taskmanager.domain.dto.response.TaskResponse;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -30,4 +29,12 @@ public interface TaskService {
    * @return TaskResponse
    */
   TaskResponse getTaskById(Long id);
+
+  /**
+   * update the task details
+   * @param taskRequest updated task details
+   * @param id updated task id
+   * @return TaskResponse
+   */
+  TaskResponse updateTask(Long id, TaskRequest taskRequest);
 }
