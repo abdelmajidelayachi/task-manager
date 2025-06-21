@@ -2,6 +2,7 @@ package dev.elayachi.taskmanager.controller;
 
 import dev.elayachi.taskmanager.domain.dto.request.TaskRequest;
 import dev.elayachi.taskmanager.domain.dto.response.TaskResponse;
+import dev.elayachi.taskmanager.exception.ResourceNotFoundException;
 import dev.elayachi.taskmanager.exception.ValidationException;
 import dev.elayachi.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
@@ -62,6 +63,19 @@ public class TaskController {
   public ResponseEntity<List<TaskResponse>> getTasks() {
     return  ResponseEntity.ok(taskService.getAllTasks());
   }
+
+
+  /**
+   * Retrieving task by id
+   * @param id task identifier
+   * @return ResponseEntity containing TaskResponse
+   * @throws ResourceNotFoundException if task is not found
+   */
+  @GetMapping("/{id}")
+  public ResponseEntity<TaskResponse> getTaskById(@PathVariable("id") Long id) {
+    return ResponseEntity.ok(taskService.getTaskById(id));
+  }
+
 
 
 }

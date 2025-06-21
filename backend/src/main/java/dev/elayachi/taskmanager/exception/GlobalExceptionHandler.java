@@ -35,6 +35,29 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+
+  /**
+   * Handles custom ResourceNotFoundException thrown by the application.
+   *
+   * @param ex the ResourceNotFoundException
+   * @param request the HTTP request
+   * @return ResponseEntity with error details and HTTP 404 Not Found
+   */
+  @ExceptionHandler(ResourceNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex,
+                                                                       HttpServletRequest request) {
+    logger.warn("Resource not found: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = new ErrorResponse(
+      HttpStatus.NOT_FOUND.value(),
+      "Resource Not Found",
+      ex.getMessage(),
+      request.getRequestURI()
+    );
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+  }
+
     /**
      * Handles ValidationException thrown by the application.
      *

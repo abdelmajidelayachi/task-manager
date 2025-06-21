@@ -23,4 +23,11 @@ public interface TaskService {
    * @return saved task mapped to response dto
    */
   TaskResponse createTask(TaskRequest taskRequest);
+
+  /**
+   * Get task by id
+   * @param id task id
+   * @return TaskResponse
+   */
+  TaskResponse getTaskById(Long id);
 }
