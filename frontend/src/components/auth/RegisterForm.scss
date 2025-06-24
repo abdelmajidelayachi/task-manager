@@ -1,0 +1,145 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.register-form {
+  @include card;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+    }
+
+    p {
+      color: $text-secondary;
+      font-size: 0.875rem;
+    }
+  }
+
+  &__field {
+    margin-bottom: $spacing-lg;
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: $spacing-xs;
+    }
+
+    input {
+      @include input-base;
+      font-size: 1rem;
+      padding: $spacing-sm;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+
+      &.error {
+        border-color: $error-color;
+        box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+      }
+    }
+  }
+
+  &__error {
+    color: $error-color;
+    font-size: 0.75rem;
+    margin-top: $spacing-xs;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__password-strength {
+    margin-top: $spacing-xs;
+
+    &__bar {
+      height: 4px;
+      background-color: $bg-tertiary;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: $spacing-xs;
+    }
+
+    &__fill {
+      height: 100%;
+      transition: all $transition-fast;
+      border-radius: 2px;
+
+      &--weak {
+        width: 33%;
+        background-color: $error-color;
+      }
+
+      &--medium {
+        width: 66%;
+        background-color: $warning-color;
+      }
+
+      &--strong {
+        width: 100%;
+        background-color: $success-color;
+      }
+    }
+
+    &__text {
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      &--weak {
+        color: $error-color;
+      }
+
+      &--medium {
+        color: $warning-color;
+      }
+
+      &--strong {
+        color: $success-color;
+      }
+    }
+  }
+
+  &__submit {
+    width: 100%;
+    margin-bottom: $spacing-lg;
+    padding: $spacing-sm;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &__footer {
+    text-align: center;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $border-color;
+
+    p {
+      color: $text-secondary;
+      font-size: 0.875rem;
+      margin-bottom: $spacing-sm;
+    }
+
+    a {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color $transition-fast;
+
+      &:hover {
+        color: $primary-hover;
+        text-decoration: underline;
+      }
+    }
+  }
+}

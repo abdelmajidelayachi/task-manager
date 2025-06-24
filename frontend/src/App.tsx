@@ -1,13 +1,13 @@
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './routes';
 import './styles/global.scss'
-import {TaskProvider} from "./features/tasks/context/TaskContext.tsx";
+import {AuthProvider} from "./contexts/AuthContext.tsx";
 function App() {
     return (
         <BrowserRouter>
-          <TaskProvider>
+          <AuthProvider>
             <AppRoutes />
-          </TaskProvider>
+            </AuthProvider>
         </BrowserRouter>
     );
 }

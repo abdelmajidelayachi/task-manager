@@ -13,9 +13,9 @@ import type {
 } from '../features/tasks/types/Task';
 import { Plus } from 'lucide-react';
 import './TasksPage.scss';
-import {useTasks} from "../features/tasks/context/TaskContext.tsx";
+import {TaskProvider, useTasks} from "../features/tasks/context/TaskContext.tsx";
 
-export const TasksPage: React.FC = () => {
+const TaskContent: React.FC = () => {
   const {
     filteredTasks,
     filterStatus,
@@ -132,3 +132,8 @@ export const TasksPage: React.FC = () => {
     </MainLayout>
   );
 };
+
+
+export const TasksPage: React.FC = () => {
+  return <TaskProvider><TaskContent /></TaskProvider>;
+}

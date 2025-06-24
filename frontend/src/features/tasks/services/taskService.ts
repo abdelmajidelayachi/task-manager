@@ -1,15 +1,9 @@
-import axios from 'axios';
 import type { Task, CreateTaskRequest, UpdateTaskRequest, TaskFilterStatus, TaskFilterPriority, TaskSort, TaskStatus } from '../types/Task';
-import { handleAsync } from "../../../services/errorHandler.ts";
+import { handleAsync } from "../../../services/errorHandler";
+import {apiClient} from "../../../services/apiClient.ts"; // Ensure correct path if needed
 
-const API_BASE_URL = 'http://localhost:8088/api/v1/tasks';
-
-const taskApi = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// The base URL for task-related API endpoints relative to apiClient's base URL
+const TASKS_API_PREFIX = '/v1/tasks';
 
 // localStorage keys for preferences of the user
 const STORAGE_KEYS = {
@@ -22,15 +16,22 @@ export const taskService = {
   // API operations
   getTasks: async (): Promise<Task[]> => {
     const result = await handleAsync(async () => {
-      const response = await taskApi.get<Task[]>('');
+      // Use apiClient.get with the specific tasks endpoint
+      const response = await apiClient.get<Task[]>(TASKS_API_PREFIX);
       return response.data;
     }, 'getTasks');
+
+    // Add a warning if the API call failed (result is null due to handleAsync)
+    if (result === null) {
+      console.warn('getTasks: API call failed or returned null, returning empty array. Check console for error details from errorHandler.');
+    }
     return result || [];
   },
 
   createTask: async (taskData: CreateTaskRequest): Promise<Task> => {
     const result = await handleAsync(async () => {
-      const response = await taskApi.post<Task>('', taskData);
+      // Use apiClient.post for creating a task
+      const response = await apiClient.post<Task>(TASKS_API_PREFIX, taskData);
       return response.data;
     }, 'createTask');
     if (!result) {
@@ -41,7 +42,8 @@ export const taskService = {
 
   updateTask: async (taskId: string, updates: UpdateTaskRequest): Promise<Task> => {
     const result = await handleAsync(async () => {
-      const response = await taskApi.put<Task>(`/${taskId}`, updates);
+      // Use apiClient.put for updating a task by ID
+      const response = await apiClient.put<Task>(`${TASKS_API_PREFIX}/${taskId}`, updates);
       return response.data;
     }, 'updateTask');
     if (!result) {
@@ -52,7 +54,12 @@ export const taskService = {
 
   updateTaskStatus: async (taskId: string, status: TaskStatus) => {
     const result = await handleAsync(async () => {
-      const response = await taskApi.patch<Task>(`/${taskId}/status?status=${status}`);
+      // Use apiClient.patch for updating task status.
+      // Note: If your backend PATCH endpoint expects a body for status updates,
+      // ensure you pass an object with the status, e.g., `{ status: status }`.
+      // The current implementation passes an empty object `{}` which is fine if
+      // the backend only relies on the query parameter.
+      const response = await apiClient.patch<Task>(`${TASKS_API_PREFIX}/${taskId}/status?status=${status}`, {});
       return response.data;
     }, 'updateTaskStatus');
     if (!result) {
@@ -63,7 +70,8 @@ export const taskService = {
 
   deleteTask: async (taskId: string): Promise<void> => {
     await handleAsync(async () => {
-      await taskApi.delete(`/${taskId}`);
+      // Use apiClient.delete for deleting a task by ID
+      await apiClient.delete(`${TASKS_API_PREFIX}/${taskId}`);
     }, 'deleteTask');
   },
 

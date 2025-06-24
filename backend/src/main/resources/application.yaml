@@ -15,13 +15,17 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: on
   # flyway config
   flyway:
-    enabled: true
-    baseline-on-migrate: on
+    enabled: false
+    baseline-on-migrate: off
     locations: classpath:db/migration
+
+
+jwt:
+  secret: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
 # port
 server:
   port: 8088
