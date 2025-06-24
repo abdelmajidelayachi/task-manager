@@ -1,0 +1,60 @@
+services:
+  # Database
+  db:
+    container_name: task-db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: task_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5462:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskflow-network
+
+  # Backend
+  backend:
+    container_name: task-manager-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/task_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    ports:
+      - "8088:8088"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - taskflow-network
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    container_name: task-manager-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - taskflow-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  taskflow-network:
+    driver: bridge

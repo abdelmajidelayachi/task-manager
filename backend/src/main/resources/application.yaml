@@ -1,15 +1,11 @@
-# name
 spring:
   application:
     name: Task Manager
-# database config
   datasource:
-    url: jdbc:postgresql://localhost:5462/task_db
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5462/task_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
-
-  # JPA config
   jpa:
     properties:
       hibernate:
@@ -17,15 +13,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: on
-  # flyway config
   flyway:
     enabled: false
     baseline-on-migrate: off
     locations: classpath:db/migration
 
-
 jwt:
   secret: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
-# port
+
 server:
   port: 8088
