@@ -43,4 +43,12 @@ public interface TaskService {
    * @param id task identifier
    */
   void deleteTask(Long id);
+
+  /**
+   * update the task status by id
+   * @param id task id
+   * @param status task status (TASKStatus)
+   * @return TaskResponse
+   */
+    TaskResponse updateTaskStatus(Long id, String status);
 }

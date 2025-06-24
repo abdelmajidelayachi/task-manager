@@ -1,0 +1,86 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.task-edit-form {
+  @include card;
+  padding: $spacing-md;
+  background-color: $bg-secondary;
+  border: 2px solid $primary-color;
+
+  &__field {
+    margin-bottom: $spacing-sm;
+  }
+
+  &__title-input {
+    @include input-base;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__description-input {
+    @include input-base;
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  &__row {
+    display: flex;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+
+    @include mobile-only {
+      flex-direction: column;
+    }
+  }
+
+  &__select,
+  &__date-input {
+    @include input-base;
+    flex: 1;
+  }
+
+  &__tag-input {
+    @include input-base;
+    font-size: 0.875rem;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin-top: $spacing-xs;
+  }
+
+  &__tag {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    background-color: $bg-tertiary;
+    color: $text-secondary;
+    padding: 2px $spacing-xs;
+    border-radius: $border-radius-sm;
+    font-size: 0.625rem;
+  }
+
+  &__tag-remove {
+    background: none;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: $error-color;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: flex-end;
+    margin-top: $spacing-md;
+  }
+}
