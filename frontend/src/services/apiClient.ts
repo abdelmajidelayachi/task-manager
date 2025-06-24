@@ -1,3 +1,6 @@
+// API Client with token interceptor
+import axios, { type AxiosInstance, type AxiosResponse, AxiosError } from 'axios';
+import { authService } from './authService';
 
 export interface ApiResponse<T> {
   data: T;
@@ -12,66 +15,85 @@ export interface ApiError {
 }
 
 class ApiClient {
-  private baseURL: string;
+  private axiosInstance: AxiosInstance;
 
-  constructor(baseURL: string = '/api') {
-    this.baseURL = baseURL;
-  }
+  constructor(baseURL: string = 'http://localhost:8088/api') { // Updated default base URL
+    this.axiosInstance = axios.create({
+      baseURL: baseURL,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 10000, // Request timeout
+    });
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    try {
-      const url = `${this.baseURL}${endpoint}`;
-      const config: RequestInit = {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        ...options,
-      };
-
-      const response = await fetch(url, config);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    // Request interceptor to add Authorization header
+    this.axiosInstance.interceptors.request.use(
+      (config) => {
+        const token = authService.getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
+    );
 
-      const data = await response.json();
-      return {
-        data,
-        success: true,
-      };
-    } catch (error) {
-      console.error('API request failed:', error);
-      throw {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        status: 500,
-      } as ApiError;
-    }
+    // Response interceptor to handle global errors like 401 Unauthorized
+    this.axiosInstance.interceptors.response.use(
+      (response) => response,
+      (error: AxiosError) => {
+        // If the error is an AxiosError and has a response
+        if (error.response) {
+          // Handle 401 Unauthorized specifically
+          if (error.response.status === 401) {
+            authService.clearToken(); // Clear invalid token
+            // Redirect to login page. Using window.location.href to ensure full page reload for auth state reset.
+            window.location.href = '/login';
+            // Throw a specific error to stop further processing in the caller
+            return Promise.reject(new Error('Unauthorized. Please login again.'));
+          }
+
+          // Centralized error handling for other HTTP errors
+          const errorData = error.response.data as { message?: string };
+          return Promise.reject(
+            new Error(errorData.message || `API error! status: ${error.response.status}`)
+          );
+        } else if (error.request) {
+          // The request was made but no response was received (e.g., network error)
+          return Promise.reject(new Error('Network Error: No response received from server.'));
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          return Promise.reject(new Error(`Request Error: ${error.message}`));
+        }
+      }
+    );
   }
 
   async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { method: 'GET' });
+    const response: AxiosResponse<T> = await this.axiosInstance.get(endpoint);
+    return { data: response.data, success: true };
   }
 
   async post<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data);
+    return { data: response.data, success: true };
   }
 
   async put<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+    const response: AxiosResponse<T> = await this.axiosInstance.put(endpoint, data);
+    return { data: response.data, success: true };
   }
 
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+    const response: AxiosResponse<T> = await this.axiosInstance.delete(endpoint);
+    return { data: response.data, success: true };
+  }
+
+  async patch<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+    const response: AxiosResponse<T> = await this.axiosInstance.patch(endpoint, data);
+    return { data: response.data, success: true };
   }
 }
 

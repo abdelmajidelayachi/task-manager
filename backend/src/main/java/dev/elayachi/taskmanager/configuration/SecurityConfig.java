@@ -18,6 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -52,6 +58,9 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
+      .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add this line
+      // Disable CSRF protection as JWT is stateless and token-based (not session-based)
+      .csrf(AbstractHttpConfigurer::disable)
       // Disable CSRF protection as JWT is stateless and token-based (not session-based)
       .csrf(AbstractHttpConfigurer::disable)
       // Configure authorization rules for different endpoints
@@ -71,6 +80,28 @@ public class SecurityConfig {
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return httpSecurity.build();
+  }
+
+  /**
+   * Defines a global CORS configuration for the application.
+   * This bean allows cross-origin requests from specific origins and methods.
+   * @return CorsConfigurationSource
+   */
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    // Allow requests from your frontend development server
+    configuration.setAllowedOrigins(List.of("http://localhost:5173")); // IMPORTANT: Set your frontend URL here
+    // If you need to allow all origins for testing (less secure for production):
+    // configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+    configuration.setAllowCredentials(true); // Allow sending cookies/auth headers
+    configuration.setMaxAge(3600L); // How long the CORS pre-flight request can be cached
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration); // Apply this CORS config to all paths
+    return source;
   }
 
   /**
