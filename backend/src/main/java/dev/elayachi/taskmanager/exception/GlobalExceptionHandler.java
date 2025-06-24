@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -245,6 +247,50 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+  /**
+   * Handles UsernameNotFoundException for authentication failures when a user is not found.
+   *
+   * @param ex the UsernameNotFoundException
+   * @param request the HTTP request
+   * @return ResponseEntity with error details and HTTP 401 Unauthorized
+   */
+  @ExceptionHandler(UsernameNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex,
+                                                                       HttpServletRequest request) {
+    logger.warn("Authentication failed: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(), // Use 401 Unauthorized
+                "Authentication Failed",
+                ex.getMessage(), // The message from the exception (e.g., "Invalid user credentials!")
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    /**
+     * Handles BadCredentialsException for authentication failures due to incorrect password.
+     *
+     * @param ex the BadCredentialsException
+     * @param request the HTTP request
+     * @return ResponseEntity with error details and HTTP 401 Unauthorized
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex,
+                                                                       HttpServletRequest request) {
+        logger.warn("Authentication failed: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(), // Use 401 Unauthorized
+                "Authentication Failed",
+                "Invalid username or password.", // A more generic message for security
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     /**
