@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import type { User, LoginRequest, RegisterRequest } from '../types/auth';
 import { authService } from '../services/authService';
+import {useNavigate} from "react-router-dom";
 
 // Define the shape of the authentication state
 interface AuthState {
@@ -70,6 +71,7 @@ const initialState: AuthState = {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  const navigate = useNavigate();
   // Initialize auth state on app load
   useEffect(() => {
     const initializeAuth = async () => {
@@ -109,9 +111,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       dispatch({ type: 'AUTH_START' });
       // authService.register returns SuccessResponse, not a token or user
       await authService.register(userData);
-      // After successful registration, we don't automatically log in.
-      // Instead, we just stop loading and let the form component handle navigation (e.g., to login page).
       dispatch({ type: 'SET_LOADING', payload: false });
+      navigate('/login');
     } catch (error) {
       dispatch({ type: 'AUTH_FAILURE' }); // Still dispatch failure if registration itself failed
       throw error;
