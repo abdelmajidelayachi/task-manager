@@ -9,157 +9,219 @@ Task Manager is a full-stack web application designed to help users manage their
 - **Frontend Integration with JWT & Protected Routes**: Seamlessly integrates JWTs into frontend requests, automatically attaching tokens for authenticated access. Key application routes are protected, redirecting unauthenticated users to the login page and restricting access based on user roles.
 - **Task Management (CRUD)**: Users can create, retrieve, update, and delete tasks.
 
-## Prerequisites
-Before you begin, ensure you have the following installed:
+## Quick Start with Docker (Recommended)
 
-### Backend Prerequisites
-- **Java Development Kit (JDK)**: Version 21 or higher.
-- **Maven**: Version 3.x or higher.
-- **PostgreSQL**: Database server (use docker compose to run the database service inside a container)
-- **Git**: For cloning the repository.
+### Prerequisites
+- **Docker**: Version 20.x or higher
+- **Docker Compose**: Version 2.x or higher
+- **Git**: For cloning the repository
 
-### Frontend Prerequisites
-- **Node.js**: Version 18.x or higher (includes pnpm).
-- **npm or pnpm**: Package manager (pnpm comes with Node.js).
-- **Git**: For cloning the repository.
-
-## Backend Setup (Spring Boot)
-
-### 1. Clone the Repository:
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/abdelmajidelayachi/task-manager.git
-cd backend
+cd task-manager
 ```
 
-### 2. Database Configuration:
-
-#### Option 1: Using Docker (Recommended)
-If you have Docker installed, you can easily run PostgreSQL using Docker Compose:
-
+### 2. Run the Full Application
 ```bash
-cd backend
-docker compose up -d
+# Build and start all services
+docker-compose up --build
+
+# Or run in detached mode (background)
+docker-compose up --build -d
 ```
 
-This will start a PostgreSQL container using the following `docker-compose.yml` configuration:
+### 3. Access the Application
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8088
+- **Database**: localhost:5462 (PostgreSQL)
 
-```yaml
-services:
-  db:
-    container_name: task-manager-db
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: task_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5462:5432"
-    healthcheck:   # check the health of the db
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+### 4. Stop the Application
+```bash
+# Stop all services
+docker-compose down
 
-volumes:
-  postgres_data:
+# Stop and remove volumes (clears database data)
+docker-compose down -v
 ```
 
-#### Option 2: Manual PostgreSQL Setup
-- Ensure your PostgreSQL server is running.
-- Create a database (e.g., `task_db`).
+## Manual Setup (Development)
 
-#### Database Connection Properties
-Update the database connection properties in `src/main/resources/application.yaml`:
+### Prerequisites
+- **Java Development Kit (JDK)**: Version 21 or higher
+- **Maven**: Version 3.x or higher
+- **Node.js**: Version 18.x or higher
+- **pnpm**: Package manager
+- **PostgreSQL**: Database server
+- **Git**: For cloning the repository
+
+### Backend Setup (Spring Boot)
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/abdelmajidelayachi/task-manager.git
+cd task-manager/backend
+```
+
+#### 2. Database Configuration
+
+##### Option 1: Using Docker for Database Only
+```bash
+# Run only the database service
+docker-compose up db -d
+```
+
+##### Option 2: Manual PostgreSQL Setup
+- Ensure your PostgreSQL server is running
+- Create a database (e.g., `task_db`)
+
+#### 3. Update Database Connection
+Update `src/main/resources/application.yaml`:
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5462/task_db # Adjust port/database name if needed
+    url: jdbc:postgresql://localhost:5462/task_db
     username: postgres
-    password: postgres # Your PostgreSQL password
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # Automatically update schema (for development)
+      ddl-auto: update
     show-sql: on
 ```
 
-### 3. CORS Configuration:
-The backend is configured to accept requests from `http://localhost:5173`. If your frontend runs on a different port, update the `SecurityConfig.java` file:
-
-```java
-// In src/main/java/dev/elayachi/taskmanager/configuration/SecurityConfig.java
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173")); // <--- Update this if your frontend port changes
-    // ... other configurations
-    return source;
-}
-```
-
-### 4. Build and Run the Backend:
+#### 4. Build and Run the Backend
 ```bash
-mvn clean install # Build the project and download dependencies
-mvn spring-boot:run # Run the Spring Boot application
+mvn clean install
+mvn spring-boot:run
 ```
 
-The backend will typically run on `http://localhost:8088`.
+The backend will run on `http://localhost:8088`.
 
-## Frontend Setup (React/TypeScript)
+### Frontend Setup (React/TypeScript)
 
-### 1. Navigate to the Frontend Directory:
+#### 1. Navigate to Frontend Directory
 ```bash
 cd ../frontend
 ```
 
-### 2. Install Dependencies:
+#### 2. Install Dependencies
 ```bash
 pnpm install
 ```
 
-### 3. Run the Frontend Development Server:
+#### 3. Run the Development Server
 ```bash
 pnpm run dev
 ```
 
-The frontend will typically run on `http://localhost:5173`.
+The frontend will run on `http://localhost:5173`.
 
 ## Usage & Testing
 
-1. Ensure both backend and frontend are running.
+### With Docker
+1. Start the application: `docker-compose up --build`
+2. Open your browser to `http://localhost:5173`
 
-2. **Register a New User**:
-  - Open your browser to `http://localhost:5173/register`.
-  - Fill out the registration form (e.g., Username: `testuser`, Password: `password123`, Name: `Test User`).
-  - Click "Create Account". You should see a success message (or be redirected to login).
+### Manual Setup
+1. Ensure database, backend, and frontend are running
+2. Open your browser to `http://localhost:5173`
 
-3. **Login and Obtain JWT**:
-  - Go to `http://localhost:5173/login`.
-  - Log in with the registered user's credentials (`testuser`, `password123`).
-  - Upon successful login, you should be redirected to the `/tasks` page, and a JWT token will be stored in your browser's local storage (you can inspect this in DevTools under Application -> Local Storage).
+### Testing the Application
 
-4. **Test Protected Routes and API Calls**:
-  - Once logged in, you can interact with the task management features. All API calls (e.g., fetching, creating, updating tasks) will automatically include the JWT token in the Authorization header, handled by the apiClient.
-  - Try accessing a protected route without logging in (e.g., clear local storage and try to go to `/tasks` directly) – you should be redirected to `/login`.
+#### 1. Register a New User
+- Navigate to the registration page
+- Fill out the form (Username: `testuser`, Password: `password123`, Name: `Test User`)
+- Click "Create Account"
+
+#### 2. Login and Test JWT
+- Go to the login page
+- Log in with your credentials
+- You should be redirected to the tasks page
+- JWT token will be stored in browser's local storage
+
+#### 3. Test Protected Routes
+- Try accessing `/tasks` without logging in
+- You should be redirected to `/login`
+- All API calls will automatically include the JWT token
+
+## Docker Services
+
+### Service Overview
+- **Database (db)**: PostgreSQL 16 on port 5462
+- **Backend (backend)**: Spring Boot API on port 8088
+- **Frontend (frontend)**: React app served by Nginx on port 5173
+
+### Docker Commands
+
+```bash
+# Build and start all services
+docker-compose up --build
+
+# Start services in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f [service-name]
+
+# Stop services
+docker-compose down
+
+# Rebuild a specific service
+docker-compose build [service-name]
+
+# Remove everything including volumes
+docker-compose down -v --rmi all
+```
+
+### Troubleshooting Docker
+
+#### Common Issues
+
+1. **Port conflicts**: Ensure ports 5173, 8088, and 5462 are available
+2. **Build failures**: Try `docker-compose build --no-cache`
+3. **Database connection issues**: Wait for the database health check to pass
+4. **Frontend build errors**: Check that all dependencies are in package.json
+
+#### Viewing Logs
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f backend
+docker-compose logs -f frontend
+docker-compose logs -f db
+```
+
+## CORS Configuration
+
+The backend is configured to accept requests from both development and production frontend URLs:
+- `http://localhost:5173` (Both Vite dev server and Docker/Nginx)
 
 ## Technologies Used
 
-### Backend:
+### Backend
 - Spring Boot 3.x
 - Spring Security
 - JWT (JSON Web Tokens)
 - Spring Data JPA
 - PostgreSQL
 - Maven
+- Docker
 
-### Frontend:
+### Frontend
 - React 18+
 - TypeScript
-- Vite (for development server)
+- Vite (for development)
 - Axios (for API requests)
 - Sass/SCSS (for styling)
 - React Router DOM
 - Lucide React (for icons)
+- Nginx (for production serving)
+
+### Infrastructure
+- Docker & Docker Compose
+- PostgreSQL
+- Nginx
