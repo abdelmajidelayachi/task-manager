@@ -1,0 +1,88 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use 'sass:color';
+
+.button {
+  @include button-base;
+  position: relative;
+  gap: $spacing-sm;
+
+  &--primary {
+    @include button-primary;
+  }
+
+  &--secondary {
+    @include button-secondary;
+  }
+
+  &--danger {
+    @include button-base;
+    background-color: $error-color;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: color.adjust($error-color, $lightness: -10%);
+    }
+  }
+
+  &--ghost {
+    @include button-base;
+    background-color: transparent;
+    color: $text-secondary;
+    border: none;
+
+    &:hover:not(:disabled) {
+      background-color: $bg-tertiary;
+      color: $text-primary;
+    }
+  }
+
+  &--sm {
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.75rem;
+  }
+
+  &--md {
+    padding: $spacing-sm $spacing-md;
+    font-size: 0.875rem;
+  }
+
+  &--lg {
+    padding: $spacing-md $spacing-lg;
+    font-size: 1rem;
+  }
+
+  &--loading {
+    color: transparent;
+  }
+
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

@@ -19,13 +19,17 @@ import java.util.List;
  * This controller provides endpoints for CRUD operations on tasks including:
  * - Creating new tasks
  * - Retrieving all tasks
- *
+ * - retrieving task by id
+ * - update task
+ * - update task status
+ * - delete task by id
  * Base URL: /api/v1/tasks
  *
  * @author Abdelmajid El Ayachi
  * @version 1.0
  * @since 1.0
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskController {
@@ -87,6 +91,21 @@ public class TaskController {
       TaskResponse updatedTask = taskService.updateTask(id, taskRequest);
       return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
   }
+
+  /**
+   *  update the task status
+   * @param id task id
+   * @param status status from TaskStatus
+   * @return ResponseEntity containing updated TaskResponse
+   */
+
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<TaskResponse> updateTaskStatusById(@PathVariable("id") Long id, @RequestParam("status") String status) {
+      TaskResponse updateTaskStatus = taskService.updateTaskStatus(id, status);
+    return ResponseEntity.status(HttpStatus.OK).body(updateTaskStatus);
+
+  }
+
 
   /**
    * delete task by id

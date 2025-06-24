@@ -75,6 +75,22 @@ public class TaskServiceImpl implements TaskService {
     taskRepository.delete(task);
   }
 
+  @Override
+  public TaskResponse updateTaskStatus(Long id, String status) {
+    Task.TaskStatus taskStatus = getAndValidateStatus(status);
+    Task task  = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("Task not found with id: %s", id)));
+    task.setStatus(taskStatus);
+    Task updatedTask = taskRepository.save(task);
+    return taskMapper.toResponse(updatedTask);
+  }
+
+  private Task.TaskStatus getAndValidateStatus(String status) {
+    try {
+      return Task.TaskStatus.valueOf(status);
+    } catch (IllegalArgumentException e) {
+      throw new ResourceNotFoundException(String.format("Invalid status: %s", status));
+    }
+  }
 
 
 }

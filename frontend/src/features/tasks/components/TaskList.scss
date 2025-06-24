@@ -1,0 +1,33 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  &--empty {
+    @include flex-center;
+    min-height: 300px;
+  }
+
+  &__empty-state {
+    text-align: center;
+    color: $text-secondary;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: $spacing-sm;
+      color: $text-primary;
+    }
+
+    p {
+      font-size: 0.875rem;
+    }
+  }
+
+  &__item {
+    animation: fadeIn 0.3s ease-out;
+  }
+}
